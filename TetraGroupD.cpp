@@ -192,6 +192,8 @@ void TetraGroupD::Create_Damping_Matrix(){
 	Eigen::MatrixXd MassCondi = Eigen::MatrixXd::Zero(3 * particles.size(), 3 * particles.size());
 	MassCondi = Eigen::MatrixXd::Identity(3 * particles.size(), 3 * particles.size()) - SUM_M_Matrix;//(I-Mj,cm)
 	Eigen::MatrixXd Damm_Matrix = M_Matrix_C + Damping_Matrix;//(Mj+Cj')
+	
+	Sum_M_Matrix_Sparse = SUM_M_Matrix.sparseView();
 	MassCondi_Sparse.setZero();
 	Damm_Matrix_Sparse.setZero();
 	MassCondi_Sparse = MassCondi.sparseView();
@@ -1237,7 +1239,7 @@ Eigen::Vector3d TetraGroupD::Get_Deltax_In_Group(int pid) {
 	Eigen::Vector3d temp = Eigen::Vector3d::Zero();
 	for (unsigned int pi = 0; pi < particle_num; pi++) {
 		if (particles[pi]->p_id == pid) {
-			temp = Deltax_In_Group.block(3 * pi, 0, 3, 1);
+			temp = Deltax.block(3 * pi, 0, 3, 1);
 			return temp;
 		}
 	}
@@ -1691,6 +1693,19 @@ void TetraGroupD::Calc_GMRES_FEM() {
 		}
 	}
 }
+
+Eigen::VectorXd TetraGroupD::Calc_Deltax()
+{
+	Eigen::VectorXd DeltayLocal = Eigen::VectorXd::Zero(3 * particle_num);
+	Eigen::VectorXd DeltaxLocal = Eigen::VectorXd::Zero(3 * particle_num);
+	gmresFEM.preconditioner().setFillfactor(7);
+	gmresFEM.setMaxIterations(outerGMRES);
+	gmresFEM.set_restart(innerGMRES);
+	gmresFEM.compute(Jacobi_Matrix_Sparse);
+	DeltayLocal = gmresFEM.solve(Constant_term_iteration);
+	DeltaxLocal = Rn_Matrix_Sparse * DeltayLocal;
+	return DeltaxLocal;
+}
 //implicitの計算
 //CRS形式を使わずに計算する
 //省略法の反復におけるLocal制約の計算
@@ -1940,10 +1955,11 @@ void TetraGroupD::Update_Fbind_Pos6() {
 		if ((particles[pi]->p_belong_TetraGroup_ids.size()) > 1) {
 			//固定されていない点
 			if (!(particles[pi]->Is_Fixed())) {
+				
 				//(n)(Exp + Deltax)
-				Conv = particles[pi]->p_belong_TetraGroup_ids.size() * (PrimeVector.block(3 * pi, 0, 3, 1) + Deltax_In_Group.block(3 * pi, 0, 3, 1));
+				Conv = particles[pi]->p_belong_TetraGroup_ids.size() * (PrimeVector.block(3 * pi, 0, 3, 1) + Deltax.block(3 * pi, 0, 3, 1));
 				//std::cout << particles[pi]->p_belong_TetraGroup_ids.size() << std::endl;
-				Conv = Conv - particles[pi]->p_belong_TetraGroup_ids.size() *  (particles[pi]->Get_Exp_Pos() + particles[pi]->Get_Deltax_In_Model());
+				Conv = Conv - particles[pi]->p_belong_TetraGroup_ids.size() * (particles[pi]->Get_Exp_Pos() + particles[pi]->Get_Deltax_In_Model());
 				bind_force_iterative.block(3 * pi, 0, 3, 1) += F_bind_coeff * Conv;
 				//std::cout << "Bind" << particles[pi]->p_id << "of " << tetra_group_id << " is " << std::endl;
 				//std::cout<< bind_force_iterative.block(3 * pi, 0, 3, 1) << std::endl;
@@ -1952,7 +1968,7 @@ void TetraGroupD::Update_Fbind_Pos6() {
 		//固定点の場合
 		if ((particles[pi]->Is_Fixed())) {
 			//(Exp + Deltax)
-			Conv = (PrimeVector.block(3 * pi, 0, 3, 1) + Deltax_In_Group.block(3 * pi, 0, 3, 1));
+			Conv = (PrimeVector.block(3 * pi, 0, 3, 1) + Deltax.block(3 * pi, 0, 3, 1));
 			//std::cout << particles[pi]->p_belong_TetraGroup_ids.size() << std::endl;
 			Conv = Conv - (particles[pi]->Get_Exp_Pos());
 			bind_force_iterative.block(3 * pi, 0, 3, 1) += F_bind_coeff * Conv;
@@ -2126,7 +2142,11 @@ void TetraGroupD::Calc_Jacobi_Matrix_iteration_Sparse() {
 
 
 	//現公
-	Jacobi_Matrix_Sparse = Damm_Matrix_Sparse + Rn_Matrix_Sparse * StiffnessTT_Matrix_Sparse * Rn_MatrixTR_Sparse * MassCondi_Sparse;
+	//Jacobi_Matrix_Sparse = Damm_Matrix_Sparse + Rn_Matrix_Sparse * StiffnessTT_Matrix_Sparse * Rn_MatrixTR_Sparse * MassCondi_Sparse;
+	Eigen::SparseMatrix<double> MassDamInvSparse = MassDamInv_Matrix.sparseView();
+
+	Jacobi_Matrix_Sparse = Ident + StiffnessTT_Matrix_Sparse * MassDamInvSparse - StiffnessTT_Matrix_Sparse * MassDamInvSparse * Sum_M_Matrix_Sparse;
+
 
 	//Updated A 
 	//Jacobi_Matrix_Sparse = Ident + Damm_Matrix_Sparse.inverse() * StiffnessTT_Matrix_Sparse - Damm_Matrix_Sparse.inverse() * StiffnessTT_Matrix_Sparse * SUM_M_Matrix
@@ -2291,12 +2311,16 @@ void TetraGroupD::Calc_Constant_term_iteration2() {
 void TetraGroupD::Calc_Constant_term_iteration_Sparse() {
 	//初期化
 	Constant_term_iteration = Eigen::VectorXd::Zero(3 * particle_num);
+	
 
 	//計算
 	//MassCondi = Eigen::MatrixXd::Identity(3 * particles.size(), 3 * particles.size()) - SUM_M_Matrix;//(I-Mj,cm)
-	Constant_term_iteration = Rn_Matrix_Sparse * StiffnessTT_Matrix_Sparse * (OrigineVector - Rn_MatrixTR_Sparse * MassCondi_Sparse * PrimeVector);
-	
-	
+	//Constant_term_iteration = Rn_Matrix_Sparse * StiffnessTT_Matrix_Sparse * (OrigineVector - Rn_MatrixTR_Sparse * MassCondi_Sparse * PrimeVector);
+	Eigen::SparseMatrix<double> MassDamInvSparse = MassDamInv_Matrix.sparseView();
+
+	Constant_term_iteration = StiffnessTT_Matrix_Sparse * MassDamInvSparse * (OrigineVector - Rn_MatrixTR_Sparse * MassCondi_Sparse * PrimeVector) + TIME_STEP * TIME_STEP * MassDamInvSparse * Rn_MatrixTR_Sparse * bind_force_iterative;
+
+	//Constant_term_iteration = StiffnessTT_Matrix_Sparse * OrigineVector - StiffnessTT_Matrix_Sparse * Rn_MatrixTR_Sparse + StiffnessTT_Matrix_Sparse * Rn_MatrixTR_Sparse * Sum_M_Matrix_Sparse * PrimeVector + TIME_STEP * TIME_STEP * Rn_Matrix_Sparse. * bind_force_iterative;
 	/*Constant_term_iteration = MassCondi_Sparse * -1 * PrimeVector;
 	Constant_term_iteration = Rn_MatrixTR_Sparse * Constant_term_iteration;
 	Constant_term_iteration += OrigineVector;

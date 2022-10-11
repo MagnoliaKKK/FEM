@@ -8,7 +8,6 @@
 #include "UseOldFEMDouble.h"
 #include "UseLinearFEMDouble.h"
 
-
 #include "InputKey.h"
 #include <windows.h>
 
@@ -75,8 +74,7 @@ double M_damping;	  //バネダンパ係数(M,alpha)
 double K_damping;	  //バネダンパ係数(K,Beta)
 int dividedbyn;//x方向をn分割
 int dividedbym;//y方向をm分割
-int dividedbyl;//z方向をl分割　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
-
+int dividedbyl;//z方向をl分割　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
 double F_bind_coeff;//拘束力の係数
 double F_bind_damping;//拘束力のダンパー係数
 
@@ -221,12 +219,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//	X+が右、Y+が下、Z+が手前
 	std::vector<ObjectD*> obj;									//シミュレーションで生成するオブジェクト群
 	ObjectSize size_data = { xsize, ysize, zsize ,sidelength };	//	モデルの大きさ(x,y,z方向), 1辺の長さ
-	ObjectData almi = { 2.7e+03, 6.9e+10, 0.3, size_data };	    //	アルミの（密度、ヤング率、ポアソン比）
-	ObjectData almin = { 2.7e+03, 1.0e+7, 0.49, size_data };	//	ゴムの（密度、ヤング率、ポアソン比）
-	ObjectData gum = { 0.91e+03, 1.0e+06, 0.49, size_data };	//	ゴムの（密度、ヤング率、ポアソン比）
-	ObjectData gum2 = { 0.91e+03, 1.0e+07, 0.49, size_data };	//	堅いゴムの（密度、ヤング率、ポアソン比）
+	//ObjectData almi = { 2.7e+03, 6.9e+10, 0.3, size_data };	    //	アルミの（密度、ヤング率、ポアソン比）
+	//ObjectData almin = { 2.7e+03, 1.0e+7, 0.49, size_data };	//	ゴムの（密度、ヤング率、ポアソン比）
+	//ObjectData gum = { 0.91e+03, 1.0e+06, 0.49, size_data };	//	ゴムの（密度、ヤング率、ポアソン比）
+	//ObjectData gum2 = { 0.91e+03, 1.0e+07, 0.49, size_data };	//	堅いゴムの（密度、ヤング率、ポアソン比）
 	ObjectData gum3 = { 0.91e+03, 1.0e+08, 0.49, size_data };	//	堅いゴムの（密度、ヤング率、ポアソン比）
-	ObjectData orihar = { 2.7e-03, 6.9e+12, 0.3, size_data };	//	幻想物体オリハルコンの（密度、ヤング率、ポアソン比）
+	//ObjectData orihar = { 2.7e-03, 6.9e+12, 0.3, size_data };	//	幻想物体オリハルコンの（密度、ヤング率、ポアソン比）
     
     //スケールが変わっても、分割と描画ができるように係数を求める
 	if (sidelength >= 40.0) {
@@ -279,47 +277,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//オブジェクトのインスタンス
 	ObjectD* o;						  
 	
-	if (howmanytetras == 1) {
-		particles = Create_Particles_OneTetraD(Eigen::Vector3d(0.0, 0.0, 0.0), size_data);
-		//Vector3dが原点で、ひとつの四面体要素ができる。
-		//オブジェクトのインスタンスを生成する
-		o = new UseGroupOneTetraObjectDouble(particles, gum); // ひとつの四面体要素を一つのグループにする
-	}
-	else if (howmanytetras == 2) {
-		particles = Create_Particles_TwoTetraD(Eigen::Vector3d(0.0, 0.0, 0.0), size_data);
-		//Vector3dが原点で、ふたつの四面体要素ができる。
-		//オブジェクトのインスタンスを生成する
-		o = new UseGroupTwoTetraObjectDouble(particles, gum2); // ふたつの四面体要素を二つのグループにする
-		//o = new UseLinearFEMDouble(particles, gum2); // ふたつの四面体要素を一つのグループにする
-	}
-	else if (howmanytetras == 3) {
-		particles = Create_Particles_Tri_prismD(Eigen::Vector3d(0.0, 0.0, 0.0), size_data);
-		//Vector3dが原点で、複数の三角柱ができる。
-		//オブジェクトのインスタンスを生成する
-		o = new UseGroupTriprismObjectDouble(particles, gum2); // 3この四面体要素から三角柱二つを1つグループにする
-	}
-	else if (howmanytetras == 4) {
-		//モデルを適当に選ぶ
-		particles = Create_Particles_Tri_prismD(Eigen::Vector3d(0.0, 0.0, 0.0), size_data);
-		//Vector3dが原点で、
-		//オブジェクトのインスタンスを生成する
-		o = new UseLinearFEMDouble(particles, gum2); // モデルを一つのグループにする
-	}
-	else if (howmanytetras == 5) {
-		//モデルを適当に選ぶ
-		particles = Create_ParticlesD(Eigen::Vector3d(0.0, 0.0, 0.0), size_data);
-		//particles = Create_Particles_TwoTetraD(Eigen::Vector3d(0.0, 0.0, 0.0), size_data);
-		//particles = Create_Particles_OneTetraD(Eigen::Vector3d(0.0, 0.0, 0.0), size_data);
-		//オブジェクトのインスタンスを生成する
-		o = new UseOldFEMDouble(particles, almin);  // モデルを従来のFEMでシミュレーションする
-	}
-	else {
-		particles = Create_ParticlesD(Eigen::Vector3d(0.0, 0.0, 0.0), size_data);
-		//Vector3dが原点で、右下奥に直方体ができる。
-		//オブジェクトのインスタンスを生成する
-		//o = new UseBlockObjectDouble(particles, gum);  // モデルを従来のFEMでシミュレーションする
-		o = new UseBlockObjectDouble(particles, gum3);
-	}
+	particles = Create_ParticlesD(Eigen::Vector3d(0.0, 0.0, 0.0), size_data);
+	//Vector3dが原点で、右下奥に直方体ができる。
+	//オブジェクトのインスタンスを生成する
+	//o = new UseBlockObjectDouble(particles, gum);  // モデルを従来のFEMでシミュレーションする
+	o = new UseBlockObjectDouble(particles, gum3);
 	obj.push_back(o);// 生成したオブジェクトをシミュレーションで使うオブジェクト群にpushする
 
 	//DXライブラリで描画する色(白),随時設定する
@@ -557,90 +519,90 @@ std::vector<ParticleD*> Create_ParticlesD(Eigen::Vector3d origin, ObjectSize siz
 	std::cout << "success create particle" << ":" << num << std::endl;//頂点の作成に成功したことを出力
 	return particles;
 }
-//Nodes for one Tetra model
-std::vector<ParticleD*> Create_Particles_OneTetraD(Eigen::Vector3d origin, ObjectSize size_data) {
-	std::vector<ParticleD*> particles;//オブジェクトの頂点群
-	unsigned int num = 4; //頂点の数は4で決め打ち
-	std::vector<ParticleD*> p(num);//頂点の集合
-	std::vector<Eigen::Vector3d> phys;//頂点の各座標
-	phys.push_back(Eigen::Vector3d(origin.x(), origin.y(), origin.z()));
-	phys.push_back(Eigen::Vector3d(origin.x() + size_data.size, origin.y(), origin.z()));
-	phys.push_back(Eigen::Vector3d(origin.x() + size_data.size * 0.5, origin.y() + size_data.size * sqrt(3.0)*0.5, origin.z()));
-	phys.push_back(Eigen::Vector3d(origin.x() + size_data.size * 0.5, origin.y() + size_data.size * sqrt(3.0)*0.5 / 3.0, origin.z() + size_data.size * sqrt(6.0) / 3.0));
-	//各頂点にidと座標を入れる
-	for (unsigned int i = 0; i < num; i++) {
-		p[i] = new ParticleD(phys[i]);
-		p[i]->p_id = i;
-		particles.push_back(p[i]);
-		if (i != 3) {
-			p[i]->Set_Fixed(fixedion);// 一番端の頂点を固定する
-		}
-		std::cout << i << "particle is " << std::endl;
-		std::cout << p[i]->Get_Grid() << std::endl;
-	}
-	//初期速度代入
-	//particles[3]->Update_Velocity(Eigen::Vector3d(0.0, 1.0, 0.0));	
-	std::cout << "success create particle" << ":" << num << std::endl;//頂点の作成に成功したことを出力
-	return particles;
-}
-//Nodes for two Tetra model
-std::vector<ParticleD*> Create_Particles_TwoTetraD(Eigen::Vector3d origin, ObjectSize size_data) {
-	std::vector<ParticleD*> particles;//オブジェクトの頂点群
-	unsigned int num = 5; //頂点の数は5で決め打ち
-	std::vector<ParticleD*> p(num);//頂点の集合
-	std::vector<Eigen::Vector3d> phys;//頂点の各座標
-	phys.push_back(Eigen::Vector3d(origin.x(), origin.y(), origin.z()));
-	phys.push_back(Eigen::Vector3d(origin.x() + size_data.size, origin.y(), origin.z()));
-	phys.push_back(Eigen::Vector3d(origin.x() + size_data.size * 0.5, origin.y() + size_data.size * sqrt(3.0)*0.5, origin.z()));
-	phys.push_back(Eigen::Vector3d(origin.x() + size_data.size * 0.5, origin.y() + size_data.size * sqrt(3.0)*0.5 / 3.0, origin.z() + size_data.size * sqrt(6.0) / 3.0));
-	phys.push_back(Eigen::Vector3d(origin.x() + size_data.size * 0.5, origin.y() - size_data.size * sqrt(3.0)*0.5 / 3.0, origin.z() + size_data.size * sqrt(6.0) / 3.0));
-	//各頂点にidと座標を入れる
-	for (unsigned int i = 0; i < num; i++) {
-		p[i] = new ParticleD(phys[i]);
-		p[i]->p_id = i;
-		particles.push_back(p[i]);
-		if (i <= 2) {
-			p[i]->Set_Fixed(fixedion);// 一番端の頂点を固定する
-		}
-		//if (i==4) {
-			//p[i]->Set_Fixed(fixedion);
-		//}
-		std::cout << i << "particle is " << std::endl;
-		std::cout << p[i]->Get_Grid() << std::endl;
-	}
-	//初期速度代入
-	//particles[3]->Update_Velocity(Eigen::Vector3d(0.0, 1.0, 0.0));	
-	std::cout << "success create particle of Two Tetra" << ":" << num << std::endl;//頂点の作成に成功したことを出力
-	return particles;
-}
-//Nodes for Triangular columns model
-std::vector<ParticleD*> Create_Particles_Tri_prismD(Eigen::Vector3d origin, ObjectSize size_data) {
-	std::vector<ParticleD*> particles;//オブジェクトの頂点群
-	unsigned int num = 3*(Tri_prismnum + 1); //頂点の数
-	//std::cout << "Tri_particle = " << num << std::endl;
-	std::vector<ParticleD*> p(num);//頂点の集合
-	std::vector<Eigen::Vector3d> phys;//頂点の各座標
-    for (int i = 0; i < Tri_prismnum + 1;i++) {
-		phys.push_back(Eigen::Vector3d(origin.x(), origin.y(), origin.z() + size_data.size*i));
-		phys.push_back(Eigen::Vector3d(origin.x() + size_data.size * sqrt(3.0)*0.5, origin.y() + size_data.size*0.5, origin.z() + size_data.size*i));
-		phys.push_back(Eigen::Vector3d(origin.x() , origin.y() + size_data.size, origin.z() + size_data.size*i));
-	}
-	//各頂点にidと座標を入れる
-	for (unsigned int i = 0; i < num; i++) {
-		p[i] = new ParticleD(phys[i]);
-		p[i]->p_id = i;
-		particles.push_back(p[i]);
-		if (i <= 2) {
-			p[i]->Set_Fixed(fixedion);// 一番端の頂点3つを固定する
-		}
-		std::cout << i << "particle is " << std::endl;
-		std::cout << p[i]->Get_Grid() << std::endl;
-	}
-	//初期速度代入
-	//particles[14]->Update_Velocity(Eigen::Vector3d(0.0, 100.0, 0.0));	
-	std::cout << "success create particle of Tri prism" << ":" << num << std::endl;//頂点の作成に成功したことを出力
-	return particles;
-}
+////Nodes for one Tetra model
+//std::vector<ParticleD*> Create_Particles_OneTetraD(Eigen::Vector3d origin, ObjectSize size_data) {
+//	std::vector<ParticleD*> particles;//オブジェクトの頂点群
+//	unsigned int num = 4; //頂点の数は4で決め打ち
+//	std::vector<ParticleD*> p(num);//頂点の集合
+//	std::vector<Eigen::Vector3d> phys;//頂点の各座標
+//	phys.push_back(Eigen::Vector3d(origin.x(), origin.y(), origin.z()));
+//	phys.push_back(Eigen::Vector3d(origin.x() + size_data.size, origin.y(), origin.z()));
+//	phys.push_back(Eigen::Vector3d(origin.x() + size_data.size * 0.5, origin.y() + size_data.size * sqrt(3.0)*0.5, origin.z()));
+//	phys.push_back(Eigen::Vector3d(origin.x() + size_data.size * 0.5, origin.y() + size_data.size * sqrt(3.0)*0.5 / 3.0, origin.z() + size_data.size * sqrt(6.0) / 3.0));
+//	//各頂点にidと座標を入れる
+//	for (unsigned int i = 0; i < num; i++) {
+//		p[i] = new ParticleD(phys[i]);
+//		p[i]->p_id = i;
+//		particles.push_back(p[i]);
+//		if (i != 3) {
+//			p[i]->Set_Fixed(fixedion);// 一番端の頂点を固定する
+//		}
+//		std::cout << i << "particle is " << std::endl;
+//		std::cout << p[i]->Get_Grid() << std::endl;
+//	}
+//	//初期速度代入
+//	//particles[3]->Update_Velocity(Eigen::Vector3d(0.0, 1.0, 0.0));	
+//	std::cout << "success create particle" << ":" << num << std::endl;//頂点の作成に成功したことを出力
+//	return particles;
+//}
+////Nodes for two Tetra model
+//std::vector<ParticleD*> Create_Particles_TwoTetraD(Eigen::Vector3d origin, ObjectSize size_data) {
+//	std::vector<ParticleD*> particles;//オブジェクトの頂点群
+//	unsigned int num = 5; //頂点の数は5で決め打ち
+//	std::vector<ParticleD*> p(num);//頂点の集合
+//	std::vector<Eigen::Vector3d> phys;//頂点の各座標
+//	phys.push_back(Eigen::Vector3d(origin.x(), origin.y(), origin.z()));
+//	phys.push_back(Eigen::Vector3d(origin.x() + size_data.size, origin.y(), origin.z()));
+//	phys.push_back(Eigen::Vector3d(origin.x() + size_data.size * 0.5, origin.y() + size_data.size * sqrt(3.0)*0.5, origin.z()));
+//	phys.push_back(Eigen::Vector3d(origin.x() + size_data.size * 0.5, origin.y() + size_data.size * sqrt(3.0)*0.5 / 3.0, origin.z() + size_data.size * sqrt(6.0) / 3.0));
+//	phys.push_back(Eigen::Vector3d(origin.x() + size_data.size * 0.5, origin.y() - size_data.size * sqrt(3.0)*0.5 / 3.0, origin.z() + size_data.size * sqrt(6.0) / 3.0));
+//	//各頂点にidと座標を入れる
+//	for (unsigned int i = 0; i < num; i++) {
+//		p[i] = new ParticleD(phys[i]);
+//		p[i]->p_id = i;
+//		particles.push_back(p[i]);
+//		if (i <= 2) {
+//			p[i]->Set_Fixed(fixedion);// 一番端の頂点を固定する
+//		}
+//		//if (i==4) {
+//			//p[i]->Set_Fixed(fixedion);
+//		//}
+//		std::cout << i << "particle is " << std::endl;
+//		std::cout << p[i]->Get_Grid() << std::endl;
+//	}
+//	//初期速度代入
+//	//particles[3]->Update_Velocity(Eigen::Vector3d(0.0, 1.0, 0.0));	
+//	std::cout << "success create particle of Two Tetra" << ":" << num << std::endl;//頂点の作成に成功したことを出力
+//	return particles;
+//}
+////Nodes for Triangular columns model
+//std::vector<ParticleD*> Create_Particles_Tri_prismD(Eigen::Vector3d origin, ObjectSize size_data) {
+//	std::vector<ParticleD*> particles;//オブジェクトの頂点群
+//	unsigned int num = 3*(Tri_prismnum + 1); //頂点の数
+//	//std::cout << "Tri_particle = " << num << std::endl;
+//	std::vector<ParticleD*> p(num);//頂点の集合
+//	std::vector<Eigen::Vector3d> phys;//頂点の各座標
+//    for (int i = 0; i < Tri_prismnum + 1;i++) {
+//		phys.push_back(Eigen::Vector3d(origin.x(), origin.y(), origin.z() + size_data.size*i));
+//		phys.push_back(Eigen::Vector3d(origin.x() + size_data.size * sqrt(3.0)*0.5, origin.y() + size_data.size*0.5, origin.z() + size_data.size*i));
+//		phys.push_back(Eigen::Vector3d(origin.x() , origin.y() + size_data.size, origin.z() + size_data.size*i));
+//	}
+//	//各頂点にidと座標を入れる
+//	for (unsigned int i = 0; i < num; i++) {
+//		p[i] = new ParticleD(phys[i]);
+//		p[i]->p_id = i;
+//		particles.push_back(p[i]);
+//		if (i <= 2) {
+//			p[i]->Set_Fixed(fixedion);// 一番端の頂点3つを固定する
+//		}
+//		std::cout << i << "particle is " << std::endl;
+//		std::cout << p[i]->Get_Grid() << std::endl;
+//	}
+//	//初期速度代入
+//	//particles[14]->Update_Velocity(Eigen::Vector3d(0.0, 100.0, 0.0));	
+//	std::cout << "success create particle of Tri prism" << ":" << num << std::endl;//頂点の作成に成功したことを出力
+//	return particles;
+//}
 
 
 //===========================================================================//

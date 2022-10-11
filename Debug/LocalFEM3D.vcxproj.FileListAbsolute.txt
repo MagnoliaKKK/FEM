@@ -1,0 +1,2 @@
+C:\Users\Magnolia\Desktop\FEM\Debug\LocalFEM3D.exe
+C:\Users\Magnolia\Desktop\FEM\Debug\LocalFEM3D.pdb

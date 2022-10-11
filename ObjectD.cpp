@@ -758,6 +758,62 @@ void ObjectD::Solve_Constraints12(unsigned int loop) {
 	mtUpPos.endMyTimer();
 	//std::cout << "Update Pos is " << mtUpPos.getDt() << std::endl;
 }
+
+void ObjectD::Solve_Constraints13(unsigned int loop)
+{
+	for (auto _g : groups)
+	{
+		_g->ReSet_Fbind_Pos();
+	}
+
+	for (int i = 0; i < loop; i++)
+	{
+		for (auto _g : groups)
+		{
+			if (useSparse)
+			{   
+				_g->Calc_Jacobi_Matrix_iteration_Sparse();
+				_g->Calc_Constant_term_iteration_Sparse();
+			}
+			else 
+			{
+				_g->Calc_Jacobi_Matrix_iteration();
+				_g->Calc_Constant_term_iteration2();		
+			}
+			_g->Deltax  = _g->Calc_Deltax();
+			//std::cout << _g->Deltax;
+		
+		}
+		for (auto _p : particles) {
+			if (!(_p->Is_Fixed())) {
+				_p->Set_Deltax_In_Model(Calc_New_Delatax_Mean(_p));
+			}
+			else {
+				_p->Set_Deltax_In_Model(Calc_New_Delatax_Mean(_p));
+			}
+			if (fetestexcept(FE_INVALID)) {
+				std::cout << "FE_INVALID PBD 263" << std::endl;
+			}
+			feclearexcept(FE_ALL_EXCEPT);
+		}
+		for (auto _g : groups)
+		{
+			_g->Update_Fbind_Pos6();
+		}
+		for (auto _g : groups) {
+			for (unsigned int pi = 0; pi < _g->particle_num; pi++) {
+				//速度をいれてみた
+				_g->GroupVelVector.block(3 * pi, 0, 3, 1) = (_g->PrimeVector.block(3 * pi, 0, 3, 1) + _g->Deltax.block(3 * pi, 0, 3, 1) - _g->GroupGridVector.block(3 * pi, 0, 3, 1)) / TIME_STEP;
+				_g->GroupGridVector.block(3 * pi, 0, 3, 1) = _g->PrimeVector.block(3 * pi, 0, 3, 1) + _g->Deltax.block(3 * pi, 0, 3, 1);
+				if (_g->particles[pi]->Is_Fixed()) {
+					_g->GroupVelVector.block(3 * pi, 0, 3, 1) = Eigen::Vector3d::Zero();
+					_g->GroupGridVector.block(3 * pi, 0, 3, 1) = _g->InitialVector.block(3 * pi, 0, 3, 1);
+				}
+			}
+		}
+
+	}
+}
 double ObjectD::Get_V() {
 	double v = 0;
 	for (auto _g : groups) {
@@ -905,6 +961,7 @@ Eigen::Vector3d ObjectD::Calc_New_Delatax_Mean(ParticleD* p) {
 	Eigen::Vector3d delta_p = Eigen::Vector3d::Zero();
 	for (auto _g : p->p_belong_TetraGroup_ids) {
 		TetraGroupD* tg = groups[_g];
+		
 		delta_p += tg->Get_Deltax_In_Group(p->p_id);
 		// = tg->Get_Deltax_In_Group(p->p_id);
 
@@ -922,7 +979,7 @@ Eigen::Vector3d ObjectD::Calc_New_Delatax_Mean(ParticleD* p) {
 		return delta_p;
 	}
 }
-//TimeStepのはじめ毎に外力を0にする
+//のはじめ毎に外力を0にする
 void ObjectD::Timestep_Init() {
 	Eigen::Vector3d zero_vec = Eigen::Vector3d::Zero();
 	for (auto _p : particles) {

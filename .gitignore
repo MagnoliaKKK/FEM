@@ -54,8 +54,6 @@
 mono_crash.*
 
 # Build results
-[Dd]ebug/
-[Dd]ebugPublic/
 ! subsorce/dependency/src/boost/preprocessor/debug
 [Rr]elease/
 [Rr]eleases/

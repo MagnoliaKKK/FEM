@@ -448,7 +448,7 @@ void UseBlockObjectDouble::Update() {
 	double PrecompTime = 0.0;
 	double FbinditeraTime = 0.0;
 
-	Solve_Constraints13(5);
+	Solve_Constraints13(10);
 	//差分法かLUかを選択する
 	//if (whichmethodused) {
 	//	for (auto _g : groups) {

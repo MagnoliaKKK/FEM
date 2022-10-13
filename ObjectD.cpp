@@ -796,22 +796,23 @@ void ObjectD::Solve_Constraints13(unsigned int loop)
 			}
 			feclearexcept(FE_ALL_EXCEPT);
 		}
-		for (auto _g : groups)
-		{
-			_g->Update_Fbind_Pos6();
-		}
-		for (auto _g : groups) {
-			for (unsigned int pi = 0; pi < _g->particle_num; pi++) {
-				//速度をいれてみた
-				_g->GroupVelVector.block(3 * pi, 0, 3, 1) = (_g->PrimeVector.block(3 * pi, 0, 3, 1) + _g->Deltax.block(3 * pi, 0, 3, 1) - _g->GroupGridVector.block(3 * pi, 0, 3, 1)) / TIME_STEP;
-				_g->GroupGridVector.block(3 * pi, 0, 3, 1) = _g->PrimeVector.block(3 * pi, 0, 3, 1) + _g->Deltax.block(3 * pi, 0, 3, 1);
-				if (_g->particles[pi]->Is_Fixed()) {
-					_g->GroupVelVector.block(3 * pi, 0, 3, 1) = Eigen::Vector3d::Zero();
-					_g->GroupGridVector.block(3 * pi, 0, 3, 1) = _g->InitialVector.block(3 * pi, 0, 3, 1);
-				}
+		
+
+	}
+	for (auto _g : groups)
+	{
+		_g->Update_Fbind_Pos6();
+	}
+	for (auto _g : groups) {
+		for (unsigned int pi = 0; pi < _g->particle_num; pi++) {
+			//速度をいれてみた
+			_g->GroupVelVector.block(3 * pi, 0, 3, 1) = (_g->PrimeVector.block(3 * pi, 0, 3, 1) + _g->Deltax.block(3 * pi, 0, 3, 1) - _g->GroupGridVector.block(3 * pi, 0, 3, 1)) / TIME_STEP;
+			_g->GroupGridVector.block(3 * pi, 0, 3, 1) = _g->PrimeVector.block(3 * pi, 0, 3, 1) + _g->Deltax.block(3 * pi, 0, 3, 1);
+			if (_g->particles[pi]->Is_Fixed()) {
+				_g->GroupVelVector.block(3 * pi, 0, 3, 1) = Eigen::Vector3d::Zero();
+				_g->GroupGridVector.block(3 * pi, 0, 3, 1) = _g->InitialVector.block(3 * pi, 0, 3, 1);
 			}
 		}
-
 	}
 }
 double ObjectD::Get_V() {

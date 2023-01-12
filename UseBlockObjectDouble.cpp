@@ -120,7 +120,7 @@ void UseBlockObjectDouble::Create_Groups() {
 		}
 		Share_particlenum = tempp3;
 		//これでたぶん 3*tempp3 x 3* Sum_particlenum の行列ができるはず
-		//std::cout << "オブジェクトの共有節点行列 is " << std::endl;
+		std::cout << "オブジェクトの共有節点行列 is " << std::endl;
 		//std::cout << Node_Sharing_Matrix.block(0, 0, 3 * Share_particlenum, 3 * Sum_particlenum) << std::endl;
 		
 		std::cout << "オブジェクトの共有数 is " << Share_particlenum << std::endl;
@@ -222,6 +222,7 @@ void UseBlockObjectDouble::Create_Groups() {
 		mtStiffness.startMyTimer();
 		_g->Create_Center_Grid();
 		_g->Create_Local_Stiffness_Matrix();
+		
 		_g->Create_Damping_Matrix();
 		mtStiffness.endMyTimer();
 		StiffnessTime += mtStiffness.getDt();
@@ -367,6 +368,7 @@ void UseBlockObjectDouble::Create_Group(std::vector<TetraElementD*> tetra_set, i
 	for (unsigned int i = 0; i < temp_p.size(); i++) {
 		temp_p[i]->p_belong_TetraGroup_ids.push_back(tetra_group_id);
 	}
+	
 }
 //==========================================================================//
 //	@end		   				初期設定									//
@@ -448,7 +450,7 @@ void UseBlockObjectDouble::Update() {
 	double PrecompTime = 0.0;
 	double FbinditeraTime = 0.0;
 
-	Solve_Constraints13(10);
+	Solve_Constraints13(50);
 	//差分法かLUかを選択する
 	//if (whichmethodused) {
 	//	for (auto _g : groups) {

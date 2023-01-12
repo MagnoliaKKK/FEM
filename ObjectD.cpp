@@ -761,17 +761,18 @@ void ObjectD::Solve_Constraints12(unsigned int loop) {
 
 void ObjectD::Solve_Constraints13(unsigned int loop)
 {
-	for (auto _g : groups)
-	{
+	
+	//Eigen::VectorXd LeftSide = Eigen::VectorXd::Zero();
+	for (auto _g : groups) {
 		_g->ReSet_Fbind_Pos();
 	}
-
 	for (int i = 0; i < loop; i++)
 	{
+		
 		for (auto _g : groups)
 		{
 			if (useSparse)
-			{   
+			{
 				_g->Calc_Jacobi_Matrix_iteration_Sparse();
 				_g->Calc_Constant_term_iteration_Sparse();
 			}
@@ -785,24 +786,19 @@ void ObjectD::Solve_Constraints13(unsigned int loop)
 		
 		}
 		for (auto _p : particles) {
-			if (!(_p->Is_Fixed())) {
-				_p->Set_Deltax_In_Model(Calc_New_Delatax_Mean(_p));
-			}
-			else {
-				_p->Set_Deltax_In_Model(Calc_New_Delatax_Mean(_p));
-			}
-			if (fetestexcept(FE_INVALID)) {
+			_p->Set_Deltax_In_Model(Calc_New_Delatax_Mean(_p));
+			/*if (fetestexcept(FE_INVALID)) {
 				std::cout << "FE_INVALID PBD 263" << std::endl;
 			}
-			feclearexcept(FE_ALL_EXCEPT);
+			feclearexcept(FE_ALL_EXCEPT);*/
 		}
-		
+		for (auto _g : groups)
+		{
+			_g->Update_Fbind_Pos6();
+		}
 
 	}
-	for (auto _g : groups)
-	{
-		_g->Update_Fbind_Pos6();
-	}
+	
 	for (auto _g : groups) {
 		for (unsigned int pi = 0; pi < _g->particle_num; pi++) {
 			//速度をいれてみた
@@ -814,6 +810,7 @@ void ObjectD::Solve_Constraints13(unsigned int loop)
 			}
 		}
 	}
+	
 }
 double ObjectD::Get_V() {
 	double v = 0;

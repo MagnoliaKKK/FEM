@@ -161,7 +161,7 @@ void TetraGroupD::Create_SUM_M_Matrix() {
 		SUMsub_M_Matrix.block(0, 3 * pi, 3, 3) = (m_In_Group[pi] / mass) * Eigen::Matrix3d::Identity();
 	}
 	std::cout << "SUMsub_M_Matrix" << std::endl;
-	std::cout << SUMsub_M_Matrix << std::endl;
+	//std::cout << SUMsub_M_Matrix << std::endl;
 	for (unsigned int pi = 0; pi < particle_num; pi++) {
 		SUM_M_Matrix.block(3 * pi, 0, 3, 3 * particle_num) = SUMsub_M_Matrix;
 	}
@@ -1959,7 +1959,7 @@ void TetraGroupD::Update_Fbind_Pos6() {
 				//(n)(Exp + Deltax)
 				Conv = particles[pi]->p_belong_TetraGroup_ids.size() * (PrimeVector.block(3 * pi, 0, 3, 1) + Deltax.block(3 * pi, 0, 3, 1));
 				//std::cout << particles[pi]->p_belong_TetraGroup_ids.size() << std::endl;
-				Conv = Conv - particles[pi]->p_belong_TetraGroup_ids.size() * (particles[pi]->Get_Exp_Pos() + particles[pi]->Get_Deltax_In_Model());
+				Conv = Conv - particles[pi]->p_belong_TetraGroup_ids.size() * ( particles[pi]->Get_Deltax_In_Model());
 				bind_force_iterative.block(3 * pi, 0, 3, 1) += F_bind_coeff * Conv;
 				//std::cout << "Bind" << particles[pi]->p_id << "of " << tetra_group_id << " is " << std::endl;
 				//std::cout<< bind_force_iterative.block(3 * pi, 0, 3, 1) << std::endl;

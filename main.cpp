@@ -193,6 +193,9 @@ void BasicInformation() {
 //===========================================================================//
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
+	AllocConsole();
+	freopen("CONOUT$", "w", stdout);
+
 
 	// Dataから数値を読む
 	BasicInformation();
@@ -207,6 +210,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ObjectData gum3 = { 0.91e+03, 1.0e+08, 0.49, size_data };	//	堅いゴムの（密度、ヤング率、ポアソン比）
 	ObjectData orihar = { 2.7e-03, 6.9e+12, 0.3, size_data };	//	幻想物体オリハルコンの（密度、ヤング率、ポアソン比）
 
+	if (sidelength >= 40.0) {
+		cipher = 40.0 / sidelength;
+	}
+	else if (sidelength > 1) {
+		cipher = 40.0 / sidelength;
+	}
+	else {
+		cipher = 40.0 / sidelength;
+	}
 	// オブジェクトの頂点群
 	std::vector<ParticleD*> particles;
 	//オブジェクトのインスタンス

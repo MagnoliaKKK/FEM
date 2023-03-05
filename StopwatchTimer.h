@@ -1,6 +1,5 @@
 ﻿#ifndef STOPWATCHTIME_H
 #define STOPWATCHTIME_H
-#include <windows.h>
 #include <stdio.h>
 
 #define  USE_MICROSECTIMER

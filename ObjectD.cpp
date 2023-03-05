@@ -10,7 +10,7 @@ ObjectD::ObjectD(std::vector<ParticleD*> p, ObjectData data)
 	: particles(p), data(data)//変数の初期化
 	 ,Outofforce(Eigen::Vector3d::Zero())
 {
-	mtUpRotate.setid(4), mtCEPos.setid(5), mtCFEM.setid(6), mtCconstr.setid(7), mtCP_1.setid(8), mtCP_2.setid(9), mtCP_3.setid(10);
+	//mtUpRotate.setid(4), mtCEPos.setid(5), mtCFEM.setid(6), mtCconstr.setid(7), mtCP_1.setid(8), mtCP_2.setid(9), mtCP_3.setid(10);
 }	//stopwatchのidをセット
 ObjectD::~ObjectD() {
 }
@@ -21,7 +21,7 @@ ObjectD::~ObjectD() {
 void ObjectD::Solve_Constraints8(unsigned int loop) {
 	ezolg = 0;
 	convite = 0.0;
-	mtCP_1.startMyTimer();
+
 	//一つ前のexpを0(固定点以外)に初期化する
 	for (auto _p : particles) {
 		if (!(_p->Is_Fixed())) {
@@ -35,7 +35,6 @@ void ObjectD::Solve_Constraints8(unsigned int loop) {
 	for (unsigned int i = 0; i < loop; ++i) {
 		//std::cout << "To say Goodbye" << ezolg << std::endl;
 		double delta = 0;
-		mtCP_2.startMyTimer();
 		//ひずみの部分の計算
 		for (auto _g : groups) {
 			//_g->Update_Rotate();			
@@ -47,7 +46,6 @@ void ObjectD::Solve_Constraints8(unsigned int loop) {
 				_g->Calc_CRSFEM();
 			}
 		}
-		mtCP_2.endMyTimer();
 		//位置合わせの部分
 		for (auto _p : particles) {
 			if (!(_p->Is_Fixed())) {
@@ -92,9 +90,7 @@ void ObjectD::Solve_Constraints8(unsigned int loop) {
 		std::cout << "Did Bind Reset? "<<loop <<"times"<< std::endl;
 		_g->Write_bind_force();
 	}
-	mtCP_1.endMyTimer();
 	//制約条件により更新した位置を代入する
-	mtCP_3.startMyTimer();
 	for (auto _p : particles) {
 		if (!(_p->Is_Fixed())) {
 			_p->Update(_p->Get_Exp_Pos());
@@ -104,7 +100,6 @@ void ObjectD::Solve_Constraints8(unsigned int loop) {
 		std::cout << "FE_INVALID Posi_set" << std::endl;
 	}
 	feclearexcept(FE_ALL_EXCEPT);
-	mtCP_3.endMyTimer();
 }
 //反復法
 //LU反復
@@ -113,7 +108,6 @@ void ObjectD::Solve_Constraints9(unsigned int loop) {
 	ezolg = 0;
 	convite = 0.0;
 	//std::cout << "np.array([";
-	mtCP_1.startMyTimer();
 	for (auto _p : particles) {
 		if (!(_p->Is_Fixed())) {
 			_p->Set_ExpAgo_Pos(_p->Get_Exp_Pos());
@@ -127,7 +121,6 @@ void ObjectD::Solve_Constraints9(unsigned int loop) {
 		//std::cout << "To say Goodbye" << ezolg << std::endl;
 		double delta = 0;
 		convite = 0.0;
-		mtCP_2.startMyTimer();
 		//ひずみの部分の計算
 		for (auto _g : groups) {
 			//_g->Update_Rotate();			
@@ -143,7 +136,6 @@ void ObjectD::Solve_Constraints9(unsigned int loop) {
 				//係数行列の性質でjacobi時間ステップをうまく調整しないとできない
 			}
 		}
-		mtCP_2.endMyTimer();
 		//位置合わせの部分
 		for (auto _p : particles) {
 			if (!(_p->Is_Fixed())) {
@@ -187,9 +179,8 @@ void ObjectD::Solve_Constraints9(unsigned int loop) {
 		//std::cout << "Did Bind Reset? " << loop << "times" << std::endl;
 		//_g->Write_bind_force();
 	}
-	mtCP_1.endMyTimer();
-	//制約条件により更新した位置を代入する
-	mtCP_3.startMyTimer();
+
+
 	for (auto _p : particles) {
 		if (!(_p->Is_Fixed())) {
 			_p->Update(_p->Get_Exp_Pos());
@@ -199,62 +190,22 @@ void ObjectD::Solve_Constraints9(unsigned int loop) {
 		std::cout << "FE_INVALID Posi_set" << std::endl;
 	}
 	feclearexcept(FE_ALL_EXCEPT);
-	mtCP_3.endMyTimer();
+
 }
 //debug用
 void ObjectD::Solve_Constraints10(unsigned int loop) {
 	ezolg = 0;
 	convite = 0.0;
-	MicroSecondTimer mtOldIni;
-	MicroSecondTimer mtShare;
-	MicroSecondTimer mtUpBind;
-	MicroSecondTimer mtUpAgo;
-	MicroSecondTimer mtReBind;
-	MicroSecondTimer mtUpPos;
-	MicroSecondTimer mtGMRES;
-	MicroSecondTimer mtLOOP;
-	mtOldIni.setid(12);
-	mtShare.setid(13);
-	mtUpBind.setid(14);
-	mtUpAgo.setid(15);
-	mtReBind.setid(16);
-	mtUpPos.setid(17);
-	mtGMRES.setid(18);
-	mtLOOP.setid(19);
-	//std::cout << std::endl;
-	//std::cout << "Rerate" << std::endl;
-	mtCP_1.startMyTimer();
-	//ノルムを計算するための値(1つ前の解)の初期化
-	/*
-	mtOldIni.startMyTimer();
-	for (auto _p : particles) {
-		if (!(_p->Is_Fixed())) {
-			_p->Set_ExpAgo_Pos(_p->Get_Prime_Pos());
-			_p->Set_DeltaxAgo_In_Model(Eigen::Vector3d::Zero());
-		}
-		if (fetestexcept(FE_INVALID)) {
-			std::cout << "FE_INVALID PBD 238" << std::endl;
-		}
-		feclearexcept(FE_ALL_EXCEPT);
-	}
-	mtOldIni.endMyTimer();
-	*/
-	//std::cout << "Initial Ago is " << mtOldIni.getDt() << std::endl;
-	//反復法により解を求める
-	mtLOOP.startMyTimer();
+
+
 	for (unsigned int i = 0; i < loop; ++i) {
 		convite = 0.0;
 		//弾性力の部分の線形方程式を計算
-		mtGMRES.startMyTimer();
 		for (auto _g : groups) {	
-			mtCP_2.startMyTimer();
 			_g->Calc_iterative_LocalFEM();
-			mtCP_2.endMyTimer();
 		}
-		mtGMRES.endMyTimer();
 		//std::cout << "Calc GMRES is " << mtGMRES.getDt() << std::endl;
 		//位置合わせの部分(Delta)
-		mtShare.startMyTimer();
 		for (auto _p : particles) {
 			if (!(_p->Is_Fixed())) {
 				_p->Set_Deltax_In_Model(Calc_New_Delatax_Mean(_p));
@@ -271,14 +222,11 @@ void ObjectD::Solve_Constraints10(unsigned int loop) {
 			//std::cout << _p->p_id<<" Deltax_In_Model"<< std::endl;
 			//std::cout << _p->Get_Deltax_In_Model() << std::endl;
 		}
-		mtShare.endMyTimer();
 		//std::cout << "Sahre potitionis " << mtShare.getDt() << std::endl;
-		//拘束力の更新部分
-		mtUpBind.startMyTimer();
 		for (auto _g : groups) {
 			_g->Update_Fbind_Pos2();
 		}
-		mtUpBind.endMyTimer();
+
 		//std::cout << "Upadate Bind is " << mtUpBind.getDt() << std::endl;
 		//一つ前kのDeltaxModel(expago)を現在k+1のDeltamodelに更新
 		/*
@@ -294,14 +242,11 @@ void ObjectD::Solve_Constraints10(unsigned int loop) {
 			feclearexcept(FE_ALL_EXCEPT);
 		}
 		*/
-		//std::cout << "Update Ago Pos is " << mtUpAgo.getDt() << std::endl;
-		mtUpAgo.endMyTimer();
 		//一回の更新でどれだけ変化したか出力する
 		//std::cout << std::setprecision(5)<< convite << ",";
 		//ConbiteGMRES[i] += convite;
 		ezolg++;
 	}
-	mtLOOP.endMyTimer();
 	//std::cout << "Loop is " << mtLOOP.getDt() << std::endl;
 	/*
 	GMREScount++;
@@ -310,7 +255,6 @@ void ObjectD::Solve_Constraints10(unsigned int loop) {
 		std::cout << "Conbite is " << std::setprecision(10) << ConbiteGMRES << std::endl;
 	}
 	*/
-	mtReBind.startMyTimer();
 	//拘束力のリセット
 	/*
 	for (auto _g : groups) {
@@ -318,10 +262,8 @@ void ObjectD::Solve_Constraints10(unsigned int loop) {
 	}
 	*/
 	//::cout << "Reset Bind is " << mtReBind.getDt() << std::endl;
-	mtReBind.endMyTimer();
-	mtCP_1.endMyTimer();
+
 	//制約条件により更新した位置を代入する
-	mtUpPos.startMyTimer();
 	for (auto _p : particles) {
 		if (!(_p->Is_Fixed())) {
 			_p->Update(_p->Get_Deltax_In_Model() + _p->Get_Prime_Pos());
@@ -331,31 +273,13 @@ void ObjectD::Solve_Constraints10(unsigned int loop) {
 		std::cout << "FE_INVALID Posi_set" << std::endl;
 	}
 	feclearexcept(FE_ALL_EXCEPT);
-	mtUpPos.endMyTimer();
 	//std::cout << "Update Pos is " << mtUpPos.getDt() << std::endl;
 }
 //debug用
 void ObjectD::Solve_Constraints10_LU(unsigned int loop) {
 	ezolg = 0;
 	convite = 0.0;
-	MicroSecondTimer mtOldIni;
-	MicroSecondTimer mtShare;
-	MicroSecondTimer mtUpBind;
-	MicroSecondTimer mtUpAgo;
-	MicroSecondTimer mtReBind;
-	MicroSecondTimer mtUpPos;
-	MicroSecondTimer mtGMRES;
-	MicroSecondTimer mtLOOP;
-	mtOldIni.setid(12);
-	mtShare.setid(13);
-	mtUpBind.setid(14);
-	mtUpAgo.setid(15);
-	mtReBind.setid(16);
-	mtUpPos.setid(17);
-	mtGMRES.setid(18);
-	mtLOOP.setid(19);
-	//反復法により解を求める
-	mtLOOP.startMyTimer();
+
 	Eigen::MatrixXd SuperA = Eigen::MatrixXd::Zero(3 * AllParticlenum + 3 * Share_particlenum, 3 * AllParticlenum);
 	unsigned int tempposu;
 	tempposu = 0;
@@ -441,8 +365,7 @@ void ObjectD::Solve_Constraints10_LU(unsigned int loop) {
 		}
 		feclearexcept(FE_ALL_EXCEPT);
 	}
-	//制約条件により更新した位置を代入する
-	mtUpPos.startMyTimer();
+
 	for (auto _p : particles) {
 		if (!(_p->Is_Fixed())) {
 			_p->Update(_p->Get_Deltax_In_Model() + _p->Get_Prime_Pos());
@@ -452,7 +375,6 @@ void ObjectD::Solve_Constraints10_LU(unsigned int loop) {
 		std::cout << "FE_INVALID Posi_set" << std::endl;
 	}
 	feclearexcept(FE_ALL_EXCEPT);
-	mtUpPos.endMyTimer();
 	//std::cout << "Update Pos is " << mtUpPos.getDt() << std::endl;
 }
 //debug用
@@ -460,25 +382,11 @@ void ObjectD::Solve_Constraints10_LU(unsigned int loop) {
 void ObjectD::Solve_Constraints11(unsigned int loop) {
 	ezolg = 0;
 	convite = 0.0;
-	MicroSecondTimer mtOldIni;
-	MicroSecondTimer mtShare;
-	MicroSecondTimer mtUpBind;
-	MicroSecondTimer mtUpAgo;
-	MicroSecondTimer mtReBind;
-	MicroSecondTimer mtUpPos;
-	MicroSecondTimer mtGMRES;
-	MicroSecondTimer mtLOOP;
-	mtOldIni.setid(12);
-	mtShare.setid(13);
-	mtUpBind.setid(14);
-	mtUpAgo.setid(15);
-	mtReBind.setid(16);
-	mtUpPos.setid(17);
-	mtGMRES.setid(18);
-	mtLOOP.setid(19);
+	
+
 	//std::cout << std::endl;
 	//std::cout << "Rerate" << std::endl;
-	mtCP_1.startMyTimer();
+
 	//ノルムを計算するための値(1つ前の解)の初期化
 	/*
 	mtOldIni.startMyTimer();
@@ -496,21 +404,21 @@ void ObjectD::Solve_Constraints11(unsigned int loop) {
 	*/
 	//std::cout << "Initial Ago is " << mtOldIni.getDt() << std::endl;
 	//反復法により解を求める
-	mtLOOP.startMyTimer();
+
 	for (unsigned int i = 0; i < loop; ++i) {
 		convite = 0.0;
 		//弾性力の部分の線形方程式を計算
-		mtGMRES.startMyTimer();
+
 		for (auto _g : groups) {
-			mtCP_2.startMyTimer();
+
 			//_g->Calc_iterative_LocalFEM();
 			_g->Calc_GMRES_FEM();
-			mtCP_2.endMyTimer();
+
 		}
-		mtGMRES.endMyTimer();
+
 		//std::cout << "Calc GMRES is " << mtGMRES.getDt() << std::endl;
 		//位置合わせの部分(Delta)
-		mtShare.startMyTimer();
+
 		for (auto _p : particles) {
 			if (!(_p->Is_Fixed())) {
 				_p->Set_Deltax_In_Model(Calc_New_Delatax_Mean(_p));
@@ -534,14 +442,14 @@ void ObjectD::Solve_Constraints11(unsigned int loop) {
 			_g->Calc_Convergence2();
 		}
 		
-		mtShare.endMyTimer();
+
 		//std::cout << "Sahre potitionis " << mtShare.getDt() << std::endl;
 		//拘束力の更新部分
-		mtUpBind.startMyTimer();
+
 		for (auto _g : groups) {
 			_g->Update_Fbind_Pos5();
 		}
-		mtUpBind.endMyTimer();
+
 		//std::cout << "Upadate Bind is " << mtUpBind.getDt() << std::endl;
 		//一つ前kのDeltaxModel(expago)を現在k+1のDeltamodelに更新
 		/*
@@ -558,13 +466,13 @@ void ObjectD::Solve_Constraints11(unsigned int loop) {
 		}
 		*/
 		//std::cout << "Update Ago Pos is " << mtUpAgo.getDt() << std::endl;
-		mtUpAgo.endMyTimer();
+
 		//一回の更新でどれだけ変化したか出力する
 		//std::cout << std::setprecision(5)<< convite << ",";
 		//ConbiteGMRES[i] += convite;
 		ezolg++;
 	}
-	mtLOOP.endMyTimer();
+
 	//std::cout << "Loop is " << mtLOOP.getDt() << std::endl;
 	/*
 	GMREScount++;
@@ -573,16 +481,15 @@ void ObjectD::Solve_Constraints11(unsigned int loop) {
 		std::cout << "Conbite is " << std::setprecision(10) << ConbiteGMRES << std::endl;
 	}
 	*/
-	mtReBind.startMyTimer();
+
 	//拘束力のリセット
 	for (auto _g : groups) {
 		_g->ReSet_Fbind_Pos();
 	}
 	//::cout << "Reset Bind is " << mtReBind.getDt() << std::endl;
-	mtReBind.endMyTimer();
-	mtCP_1.endMyTimer();
+
 	//制約条件により更新した位置を代入する
-	mtUpPos.startMyTimer();
+
 	//Delta
 	/*
 	std::cout << "Delta" << std::endl;
@@ -615,7 +522,7 @@ void ObjectD::Solve_Constraints11(unsigned int loop) {
 	}
 	feclearexcept(FE_ALL_EXCEPT);
 	*/
-	mtUpPos.endMyTimer();
+
 	//std::cout << "Update Pos is " << mtUpPos.getDt() << std::endl;
 }
 //debug用
@@ -623,42 +530,26 @@ void ObjectD::Solve_Constraints11(unsigned int loop) {
 void ObjectD::Solve_Constraints12(unsigned int loop) {
 	ezolg = 0;
 	convite = 0.0;
-	MicroSecondTimer mtOldIni;
-	MicroSecondTimer mtShare;
-	MicroSecondTimer mtUpBind;
-	MicroSecondTimer mtUpAgo;
-	MicroSecondTimer mtReBind;
-	MicroSecondTimer mtUpPos;
-	MicroSecondTimer mtGMRES;
-	MicroSecondTimer mtLOOP;
-	mtOldIni.setid(12);
-	mtShare.setid(13);
-	mtUpBind.setid(14);
-	mtUpAgo.setid(15);
-	mtReBind.setid(16);
-	mtUpPos.setid(17);
-	mtGMRES.setid(18);
-	mtLOOP.setid(19);
+
 	//std::cout << std::endl;
 	//std::cout << "Rerate" << std::endl;
-	mtCP_1.startMyTimer();
+
 	//std::cout << "Initial Ago is " << mtOldIni.getDt() << std::endl;
-	//反復法により解を求める
-	mtLOOP.startMyTimer();
+
 	for (unsigned int i = 0; i < loop; ++i) {
 		convite = 0.0;
 		//弾性力の部分の線形方程式を計算
-		mtGMRES.startMyTimer();
+
 		for (auto _g : groups) {
-			mtCP_2.startMyTimer();
+
 			_g->Calc_GMRES_FEM();
-			mtCP_2.endMyTimer();
+
 		}
-		mtGMRES.endMyTimer();
+
 		//std::cout<<"663"<<std::endl;
 		//std::cout << "Calc GMRES is " << mtGMRES.getDt() << std::endl;
 		//位置合わせの部分(Delta)
-		mtShare.startMyTimer();
+
 		for (auto _p : particles) {
 			if (!(_p->Is_Fixed())) {
 				_p->Set_Deltax_In_Model(Calc_New_Delatax_Mean(_p));
@@ -678,10 +569,10 @@ void ObjectD::Solve_Constraints12(unsigned int loop) {
 			_g->Calc_Convergence2();
 		}
 		*/
-		mtShare.endMyTimer();
+
 		//std::cout << "Sahre potitionis " << mtShare.getDt() << std::endl;
 		//拘束力の更新部分
-		mtUpBind.startMyTimer();
+
 		for (auto _g : groups) {
 			Eigen::VectorXd GMRES_Bind = Eigen::VectorXd(3 * _g->particle_num);
 			//GMRES_Bind = _g->bind_force_iterative;
@@ -702,15 +593,15 @@ void ObjectD::Solve_Constraints12(unsigned int loop) {
 			}
 			*/
 		}
-		mtUpBind.endMyTimer();
+
 		//std::cout << "Update Ago Pos is " << mtUpAgo.getDt() << std::endl;
-		mtUpAgo.endMyTimer();
+
 		//一回の更新でどれだけ変化したか出力する
 		//std::cout << std::setprecision(5)<< convite << ",";
 		//ConbiteGMRES[i] += convite;
 		ezolg++;
 	}
-	mtLOOP.endMyTimer();
+
 	//std::cout << "Loop is " << mtLOOP.getDt() << std::endl;
 	
 	GMREScount++;
@@ -719,16 +610,15 @@ void ObjectD::Solve_Constraints12(unsigned int loop) {
 		std::cout << "Conbite is " << std::setprecision(10) << ConbiteGMRES << std::endl;
 	}
 	*/
-	mtReBind.startMyTimer();
+
 	//拘束力のリセット
 	for (auto _g : groups) {
 		_g->ReSet_Fbind_Pos();
 	}
 	//::cout << "Reset Bind is " << mtReBind.getDt() << std::endl;
-	mtReBind.endMyTimer();
-	mtCP_1.endMyTimer();
+
 	//制約条件により更新した位置を代入する
-	mtUpPos.startMyTimer();
+
 	//Delta
 	/*
 	std::cout << "Delta" << std::endl;
@@ -750,7 +640,7 @@ void ObjectD::Solve_Constraints12(unsigned int loop) {
 	if (fetestexcept(FE_INVALID)) {
 		std::cout << "FE_INVALID Posi_set" << std::endl;
 	}
-	mtUpPos.endMyTimer();
+
 	//std::cout << "Update Pos is " << mtUpPos.getDt() << std::endl;
 }
 double ObjectD::Get_V() {

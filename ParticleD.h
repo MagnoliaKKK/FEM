@@ -54,9 +54,9 @@ public:
 	const Eigen::Vector3d& Get_ExpAgo_Pos()const;
 	const Eigen::Vector3d& Get_Deltax_In_Model()const;
 	const Eigen::Vector3d& Get_DeltaxAgo_In_Model()const;
-	const Eigen::Vector3d& ParticleD::Get_Draw_Grid()const;
-	const Eigen::Vector3d& ParticleD::Get_IM_Grid()const;
-	const double& ParticleD::Get_Mass()const;
+	const Eigen::Vector3d& Get_Draw_Grid()const;
+	const Eigen::Vector3d& Get_IM_Grid()const;
+	const double& Get_Mass()const;
 
 	bool Is_Fixed()const;
 

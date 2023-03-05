@@ -20,8 +20,8 @@ public:
 	void BuildMatrix();
 	const std::vector< ParticleD* > particles;//groupが持っているparticle
 	const unsigned int particle_num;	     //particle数
-	void TetraGroupD::Set_Size_para(int particle_num);					 //各変数の要素数を決定する
-	void TetraGroupD::Set_Size_para2(std::vector< ParticleD* > particles); //各変数の要素数を決定する
+	void Set_Size_para(int particle_num);					 //各変数の要素数を決定する
+	void Set_Size_para2(std::vector< ParticleD* > particles); //各変数の要素数を決定する
 
 																		 //剛性行列を作成するための変数、関数
 	ObjectData data;			      //材料パラメータ
@@ -73,12 +73,12 @@ public:
 	Eigen::Vector3d origin_center_grid;//t=0でのグループの質量中心グローバルベクトル(重心ベクトル)
 	Eigen::Vector3d center_grid;	   //t!=0でのグループの質量中心グローバルベクトル(重心ベクトル)
 	std::vector<Eigen::Vector3d> origin_center_distance;//各particleにおける初めの重心からの距離(global)(変化しない)
-	std::vector<Eigen::Vector3d> TetraGroupD::Get_origin_center_distance();//上の変数を取得
+	std::vector<Eigen::Vector3d> Get_origin_center_distance();//上の変数を取得
 	std::vector<Eigen::Vector3d> center_distance;		//各particleにおける現在の重心からの距離(global)
 	std::vector<Eigen::Vector3d> origin_local_grid;		//各particleのローカル座標初期位置
-	std::vector<Eigen::Vector3d> TetraGroupD::Get_origin_local_grid();	  //上の変数を取得
-	Eigen::VectorXd TetraGroupD::Get_bind_force();//拘束力を取得
-	void TetraGroupD::Write_bind_force();//拘束力を取得
+	std::vector<Eigen::Vector3d> Get_origin_local_grid();	  //上の変数を取得
+	Eigen::VectorXd Get_bind_force();//拘束力を取得
+	void Write_bind_force();//拘束力を取得
 
 	//拘束力の変更
 	void ReSet_Fbind_Pos(); //各節点における拘束力ベクトルを0にリセットする

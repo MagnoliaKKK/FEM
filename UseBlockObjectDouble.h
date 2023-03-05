@@ -23,7 +23,7 @@ private:
 	Eigen::Vector3d Get_Center_Grid(std::vector<ParticleD*> p);
 	std::map<TetraElementD*, bool> tetra_map;//TetraElementがすでにグループに使用されているかどうかのmap
 	std::vector< TetraElementD* > Create_Group_Candidate();
-	bool UseBlockObjectDouble::GroupdivideNML(TetraElementD *t, int a, int b, int c);
+	bool GroupdivideNML(TetraElementD *t, int a, int b, int c);
 
 	//debug
 	unsigned int flag;

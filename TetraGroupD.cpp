@@ -233,7 +233,7 @@ void TetraGroupD::Create_Center_Grid() {
 	Eigen::VectorXd x(3 * particles.size());
 	Eigen::VectorXd centerog(3 * particles.size());
 	//質量行列が対角成分のみでないのとき
-	if (mdiag == FALSE) {
+	if (mdiag == false) {
 		for (auto it = particles.begin(), end = particles.end(); it != end; it++) {
 			size_t index = std::distance(particles.begin(), it);
 			x.block(3 * index, 0, 3, 1) = (*it)->Get_Grid();
@@ -766,14 +766,7 @@ void TetraGroupD::Update_Rotate() {
 
 //svdによる極分解によって回転行列を計算する
 void TetraGroupD::Create_Rotate_Matrix() {
-	MicroSecondTimer mtRotationApq;
-	MicroSecondTimer mtRotationSVD;
-	MicroSecondTimer mtRotationSparse;
-	mtRotationApq.setid(20);
-	mtRotationSVD.setid(22);
-	mtRotationSparse.setid(23);
 
-	mtRotationApq.startMyTimer();
 	//線形変換AはApqとAqqの積で表現できる
 	Eigen::Matrix3d Apq = Eigen::Matrix3d::Zero();
 	Eigen::Matrix3d tempA = Eigen::Matrix3d::Zero();
@@ -808,18 +801,15 @@ void TetraGroupD::Create_Rotate_Matrix() {
 			//Apq += m_In_Group[pi] * tempA;
 		}
 	}
-	mtRotationApq.endMyTimer();
 
-	mtRotationSVD.startMyTimer();
 	//回転以外の成分行列SはApqを極分解して得られる
 	Eigen::JacobiSVD <Eigen::MatrixXd> svd(Apq, Eigen::ComputeFullU | Eigen::ComputeFullV);
 
 	//この時刻におけるグループの回転行列Rと逆行列
 	rotate_matrix = svd.matrixU() * svd.matrixV().transpose();
-	mtRotationSVD.endMyTimer();
 
 	//std::cout << rotate_matrix << std::endl;
-	mtRotationSparse.startMyTimer();
+
 	rotate_matrix_trans = rotate_matrix.transpose();
 	if (fetestexcept(FE_INVALID)) {
 		std::cout << "FE_INVALID R" << std::endl;
@@ -835,13 +825,7 @@ void TetraGroupD::Create_Rotate_Matrix() {
 	}
 	Rn_Matrix_Sparse = rotate_matrix3N.sparseView();
 	Rn_MatrixTR_Sparse = (rotate_matrix3N.transpose()).sparseView();
-	mtRotationSparse.endMyTimer();
 
-	//Debug
-	//かかる時間を計測する
-	Apqtime += mtRotationApq.getDt();
-	APDtime += mtRotationSVD.getDt();
-	APDSparsetime += mtRotationSparse.getDt();
 	if (APDcount == 200) {
 		std::cout << "ApqTime " << tetra_group_id << " is " << std::setprecision(10) << Apqtime / 200.0 << std::endl;
 		std::cout << "SVDTime " << tetra_group_id << " is " << std::setprecision(10) << APDtime / 200.0 << std::endl;
@@ -851,14 +835,7 @@ void TetraGroupD::Create_Rotate_Matrix() {
 }
 //極分解によって回転行列を計算する
 void TetraGroupD::Create_Rotate_Matrix_APD() {
-	MicroSecondTimer mtRotationApq;
-	MicroSecondTimer mtRotationAPD;
-	MicroSecondTimer mtRotationSparse;
-	mtRotationApq.setid(20);
-	mtRotationAPD.setid(21);
-	mtRotationSparse.setid(23);
 
-	mtRotationApq.startMyTimer();
 	//線形変換AはApqとAqqの積で表現できる
 	Eigen::Matrix3d Apq = Eigen::Matrix3d::Zero();
 	Eigen::Matrix3d tempA = Eigen::Matrix3d::Zero();
@@ -904,10 +881,7 @@ void TetraGroupD::Create_Rotate_Matrix_APD() {
 		Apq += pit->Get_Mass() * tempA;
 	}
 	*/
-	mtRotationApq.endMyTimer();
 
-
-	mtRotationAPD.startMyTimer();
 	//回転以外の成分行列SはApqを極分解して得られる
 	Eigen::Vector3d omega = Eigen::Vector3d::Identity();
 	double tau = 0.1e-5;
@@ -941,33 +915,21 @@ void TetraGroupD::Create_Rotate_Matrix_APD() {
 		countupAPD++;
 	}
 	rotate_matrix = quaternion.matrix();
-	mtRotationAPD.endMyTimer();
 
-	mtRotationSparse.startMyTimer();
 	//std::cout << "countupAPD " << countupAPD << std::endl;
 	//std::cout << rotate_matrix << std::endl;
 	Eigen::MatrixXd rotate_matrix3N = Eigen::MatrixXd::Zero(3 * particles.size(), 3 * particles.size());
-	Rn_Matrix_Sparse.setZero();
-	Rn_MatrixTR_Sparse.setZero();
 	// Calc rotate_matrix3N
 	for (unsigned int pi = 0; pi < particle_num; pi++) {
 		rotate_matrix3N.block(3 * pi, 3 * pi, 3, 3) = rotate_matrix;
 	}
 	Rn_Matrix_Sparse = rotate_matrix3N.sparseView();
 	Rn_MatrixTR_Sparse = (rotate_matrix3N.transpose()).sparseView();
-	mtRotationSparse.endMyTimer();
+
 
 	//Debug
 	//かかる時間を計測する
-	Apqtime += mtRotationApq.getDt();
-	APDtime += mtRotationAPD.getDt();
-	APDSparsetime += mtRotationSparse.getDt();
-	if (APDcount == 300) {
-		std::cout << "ApqTime " << tetra_group_id << " is " << std::setprecision(10) << Apqtime / 300.0 << std::endl;
-		std::cout << "APDTime " << tetra_group_id << " is " << std::setprecision(10) << APDtime / 300.0 << std::endl;
-		std::cout << "SparseTime " << tetra_group_id << " is " << std::setprecision(10) << APDSparsetime / 300.0 << std::endl;
-	}
-	APDcount++;
+
 }
 void TetraGroupD::Create_Rotate_Matrix_APD_Debug(Eigen::Matrix3d temp) {
 	//線形変換AはApqとAqqの積で表現できる
@@ -1578,11 +1540,10 @@ void TetraGroupD::Calc_iterative_LocalFEM() {
 			//vector_u = gmresFEM.solve(Constant_term_iteration + bind_force_iterative);
 
 			//初期値は一つ前の値から計算したものをいれる
-			MicroSecondTimer mtGMRESReal;
-			mtGMRESReal.setid(32);
-			mtGMRESReal.startMyTimer();
+
+
 			Deltax_In_Group = gmresFEM.solveWithGuess(Constant_term_iteration + bind_force_iterative, iterativeVector);
-			mtGMRESReal.endMyTimer();
+
 			//std::cout << "Real GMRES is " << mtGMRESReal.getDt() << std::endl;
 			//std::cout << "GMRES前なし：#iterations：" << gmresFEM.iterations() << "、推定エラー：" << gmresFEM.error() << std::endl;
 		}
@@ -1665,24 +1626,21 @@ void TetraGroupD::Calc_GMRES_FEM() {
 		//GMRES
 		//前処理なし
 		if (!usePreIte) {
-			MicroSecondTimer mtGMRESReal;
-			mtGMRESReal.setid(32);
-			mtGMRESReal.startMyTimer();
+
+
 			Deltax_Bind = gmresFEM_Pre.solve(bind_force_iterative);
 			//Deltax_In_Group = gmresFEM_Pre.solveWithGuess(Constant_term_iteration + bind_force_iterative, iterativeVector);
 			Deltax_In_Group = Deltax_CoFEM + Deltax_Bind;
-			mtGMRESReal.endMyTimer();
+
 		}
 		else {
 			//前処理あり
-			MicroSecondTimer mtGMRESReal;
-			mtGMRESReal.setid(32);
-			mtGMRESReal.startMyTimer();
+
 			Deltax_Bind = gmresFEM_Pre2.solve(bind_force_iterative);
 			//Deltax_Bind = gmresFEM_Pre2.solveWithGuess(bind_force_iterative, iterativeVector);
 			//Deltax_In_Group = gmresFEM_Pre2.solveWithGuess(Constant_term_iteration + bind_force_iterative, iterativeVector);
 			Deltax_In_Group = Deltax_CoFEM + Deltax_Bind;
-			mtGMRESReal.endMyTimer();
+
 		}
 	}
 }

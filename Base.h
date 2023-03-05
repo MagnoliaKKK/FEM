@@ -14,7 +14,7 @@
 #include <map>
 #include <set>
 #include <fstream>
-#include <windows.h>
+//#include <windows.h>
 #include <iomanip>
 #include <fenv.h>
 
@@ -22,7 +22,6 @@
 #include "Eigen/LU"
 #include "Eigen/Core"
 #include "Eigen/Geometry"
-#include "StopwatchTimer.h"
 #include "Eigen/SVD"
 #include "Eigen/Sparse"
 #include "Eigen/IterativeLinearSolvers"

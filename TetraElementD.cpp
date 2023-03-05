@@ -337,7 +337,7 @@ void TetraElementD::Create_Stiffness_Matrix2(const Eigen::Vector3d& origin, cons
 //===========================================================================//
 void TetraElementD::Create_M_Matrix(double& density) {
 	//質量行列が対角成分のみのとき
-	if (mdiag == TRUE) {
+	if (mdiag == true) {
 		//集中質量マトリクス
 		double mass = density * this->Get_Volume();//四面体の質量
 		m_matrix = (mass / 4.0) * Eigen::MatrixXd::Identity(3 * particles.size(), 3 * particles.size());

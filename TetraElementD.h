@@ -37,7 +37,7 @@ public:
 	Eigen::Matrix3d Get_K_Submatrix(ParticleD* p1, ParticleD* p2);
 	int Get_K_Submatrix_Edge(ParticleD* p1, ParticleD* p2);
 	Eigen::Matrix3d Get_M_Submatrix(ParticleD* p1, ParticleD* p2);
-	Eigen::MatrixXd TetraElementD::Get_M_Matrix();
+	Eigen::MatrixXd Get_M_Matrix();
 	int Get_M_Submatrix_Edge(ParticleD* p1, ParticleD* p2);
 	bool Is_Adequate()const;
 

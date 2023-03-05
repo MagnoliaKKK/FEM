@@ -122,22 +122,22 @@ void BasicInformation() {
 		else if (name == "Gravity")
 			Gravity = temp;
 		else if (name == "useCRS")
-			if (temp)  useCRS = TRUE;
-			else  useCRS = FALSE;
+			if (temp)  useCRS = true;
+			else  useCRS = false;
 		else if (name == "mdiag")
-			if (temp)  mdiag = TRUE;
-			else  mdiag = FALSE;
+			if (temp)  mdiag = true;
+			else  mdiag = false;
 		else if (name == "mSys")
 			mSys = int(temp);
 		else if (name == "loopite")
-			if (temp)  loopite = TRUE;
-			else  loopite = FALSE;
+			if (temp)  loopite = true;
+			else  loopite = false;
 		else if (name == "rollcamera")
-			if (temp)  rollcamera = TRUE;
-			else  rollcamera = FALSE;
+			if (temp)  rollcamera = true;
+			else  rollcamera = false;
 		else if (name == "fixedion")
-			if (temp)  fixedion = TRUE;
-			else  fixedion = FALSE;
+			if (temp)  fixedion = true;
+			else  fixedion = false;
 		else if (name == "howmanytetras")
 			howmanytetras = int(temp);
 		else if (name == "M_damping")
@@ -191,10 +191,8 @@ void BasicInformation() {
 }
 //===========================================================================//
 //===========================================================================//
-int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
+int main() {
 
-	AllocConsole();
-	freopen("CONOUT$", "w", stdout);
 
 
 	// Dataから数値を読む
@@ -259,7 +257,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			countup++;						 // 経過したステップ数を記録する
 			if (countup < 50) {				 // 50ステップのときの総計算時間を測定
-				TIMERof50 += mtUpdate.getDt();// 1ステップ中の位置更新の計算時間を取得し加算
+				//TIMERof50 += mtUpdate.getDt();// 1ステップ中の位置更新の計算時間を取得し加算
 			}
 
 			//実験用の変数

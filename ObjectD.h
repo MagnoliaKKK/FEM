@@ -27,13 +27,7 @@ public:
 
 	void Set_Force(Eigen::Vector3d grid);//最後の頂点(一番右下の頂点)にマウスのポインタ分だけ力をかける
 	Eigen::Vector3d Outofforce;
-	MicroSecondTimer mtUpRotate; // 回転の計算時間
-	MicroSecondTimer mtCEPos;	 // 弾性力以外の力による位置更新の計算時間
-	MicroSecondTimer mtCFEM;	 // 一回目の有限要素法による位置更新の計算時間
-	MicroSecondTimer mtCconstr;	 // 制約条件による位置の修正にかかる時間
-	MicroSecondTimer mtCP_1;     //省略法の反復計算にかかる時間
-	MicroSecondTimer mtCP_2;     //省略法の局所剛性行列のFEMによる制約での計算時間
-	MicroSecondTimer mtCP_3;     //省略法の位置の更新にかかる時間
+
 
 	std::vector<TetraGroupD*> groups;
 	std::vector<ParticleD*> particles; //頂点粒子

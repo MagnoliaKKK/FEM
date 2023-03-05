@@ -215,16 +215,13 @@ void UseBlockObjectDouble::Create_Groups() {
 		}
 	}
 	//剛性行列の作成
-	MicroSecondTimer mtStiffness;
-	mtStiffness.setid(33);
-	double StiffnessTime = 0.0;
+
 	for (auto _g : groups) {
-		mtStiffness.startMyTimer();
+
 		_g->Create_Center_Grid();
 		_g->Create_Local_Stiffness_Matrix();
 		_g->Create_Damping_Matrix();
-		mtStiffness.endMyTimer();
-		StiffnessTime += mtStiffness.getDt();
+
 
 		//節点情報などの計算
 		_g->Create_Information();
@@ -384,16 +381,11 @@ void UseBlockObjectDouble::Update() {
 		//初期速度代入
 		//particles[3]->Update_Velocity(Eigen::Vector3d(0.0, 0.1, 0.0));
 
-		mtCEPos.startMyTimer();
 		//_g->Calc_Exp_Pos3();
 		_g->Calc_Exp_Pos_Group();//Predicted position xj(i+1)
-		mtCEPos.endMyTimer();
-		Exptime += mtCEPos.getDt();
-		//std::cout<<"Hello EXP"<<countup<<std::endl;
-		//std::cout << std::fixed << std::setprecision(10) <<particles[3]->Get_Exp_Pos() <<std::endl;
 
-		//回転を計算
-		mtUpRotate.startMyTimer();
+
+
 		if (useUpRotate) {
 			_g->Update_Rotate();
 			//_g->Update_Rotate2();
@@ -409,8 +401,7 @@ void UseBlockObjectDouble::Update() {
 			_g->Rn_Matrix_Sparse = rotate_matrix3N.sparseView();
 			_g->Rn_MatrixTR_Sparse = (rotate_matrix3N.transpose()).sparseView();
 		}
-		mtUpRotate.endMyTimer();
-		Rotatetime += mtUpRotate.getDt();
+
 		//std::cout << "create Rotate" << std::endl;
 	}
 	//std::cout << "Exp Time is " << Exptime << std::endl;
@@ -437,21 +428,14 @@ void UseBlockObjectDouble::Update() {
 	}
 	*/
 	//std::cout << "OK" << std::endl;
-	mtCconstr.startMyTimer();
-	MicroSecondTimer mtUpadateJacobi;
-	MicroSecondTimer mtPrecomp;
-	MicroSecondTimer mtFbinditera;
-	mtUpadateJacobi.setid(30);
-	mtPrecomp.setid(32);
-	mtFbinditera.setid(33);
+
 	double JacobiTime = 0.0;
 	double PrecompTime = 0.0;
 	double FbinditeraTime = 0.0;
 	//差分法かLUかを選択する
 	if (whichmethodused) {
 		for (auto _g : groups) {
-			mtCP_3.startMyTimer();
-			mtUpadateJacobi.startMyTimer();
+
 			//初期化してもしなくてもいい
 			_g->iterativeVector = Eigen::VectorXd::Zero(3 * _g->particles.size());
 			if (useSparse) {
@@ -462,38 +446,36 @@ void UseBlockObjectDouble::Update() {
 				_g->Calc_Jacobi_Matrix_iteration();
 				_g->Calc_Constant_term_iteration2();
 			}
-			mtUpadateJacobi.endMyTimer();
-			JacobiTime += mtUpadateJacobi.getDt();
+
 			//Jacobi行列の前処理
-			mtPrecomp.startMyTimer();
+
 			_g->Calc_GMRES_Pre();
-			mtPrecomp.endMyTimer();
-			PrecompTime += mtPrecomp.getDt();
-			mtCP_3.endMyTimer();
+
+
 		}
 		//std::cout << "Jacobi time is " << JacobiTime << std::endl;
 		//std::cout << "Precomp time is " << PrecompTime << std::endl;
 		//反復法
 		//std::cout << "OK" << std::endl;
-		mtFbinditera.startMyTimer();
+
 		Solve_Constraints12(PBD_LOOP);
-		mtFbinditera.endMyTimer();
-		FbinditeraTime = mtFbinditera.getDt();
+
+
 		//std::cout << "Fbinditera time is " << FbinditeraTime << std::endl;
 	}
 	else {
 		for (auto _g : groups) {
-			mtCP_3.startMyTimer();
+
 			//初期化してもしなくてもいい
 			//_g->iterativeVector = Eigen::VectorXd::Zero(3 * _g->particles.size());
 			_g->Calc_Jacobi_Matrix_iteration();
 			_g->Calc_Constant_term_iteration2();
-			mtCP_3.endMyTimer();
+
 		}
 		//反復法
 		Solve_Constraints10_LU(PBD_LOOP);
 	}
-	mtCconstr.endMyTimer();
+
 	
 
 	//マウスの座標を出力(外力を働かせるようにもできる)

@@ -18,7 +18,6 @@
 #include <iomanip>
 #include <fenv.h>
 
-#include "DxLib.h"
 #include "Eigen/Dense"
 #include "Eigen/LU"
 #include "Eigen/Core"
@@ -30,12 +29,7 @@
 
 //typedef unsigned int size_t;
 
-//Dxlib 色関係定数
-const unsigned int WHITE = GetColor(255, 255, 255);
-const unsigned int BLACK = GetColor(0, 0, 0);
-const unsigned int RED = GetColor(255, 0, 0);
-const unsigned int GREEN = GetColor(0, 255, 0);
-const unsigned int BLUE = GetColor(0, 0, 255);
+
 
 //シミュレーション定数
 extern double MOUSE_RANGE;

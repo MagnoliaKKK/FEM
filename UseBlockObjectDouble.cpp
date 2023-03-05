@@ -120,7 +120,7 @@ void UseBlockObjectDouble::Create_Groups() {
 		}
 		Share_particlenum = tempp3;
 		//これでたぶん 3*tempp3 x 3* Sum_particlenum の行列ができるはず
-		std::cout << "オブジェクトの共有節点行列 is " << std::endl;
+		//std::cout << "オブジェクトの共有節点行列 is " << std::endl;
 		//std::cout << Node_Sharing_Matrix.block(0, 0, 3 * Share_particlenum, 3 * Sum_particlenum) << std::endl;
 		
 		std::cout << "オブジェクトの共有数 is " << Share_particlenum << std::endl;
@@ -222,7 +222,6 @@ void UseBlockObjectDouble::Create_Groups() {
 		mtStiffness.startMyTimer();
 		_g->Create_Center_Grid();
 		_g->Create_Local_Stiffness_Matrix();
-		
 		_g->Create_Damping_Matrix();
 		mtStiffness.endMyTimer();
 		StiffnessTime += mtStiffness.getDt();
@@ -368,7 +367,6 @@ void UseBlockObjectDouble::Create_Group(std::vector<TetraElementD*> tetra_set, i
 	for (unsigned int i = 0; i < temp_p.size(); i++) {
 		temp_p[i]->p_belong_TetraGroup_ids.push_back(tetra_group_id);
 	}
-	
 }
 //==========================================================================//
 //	@end		   				初期設定									//
@@ -449,74 +447,54 @@ void UseBlockObjectDouble::Update() {
 	double JacobiTime = 0.0;
 	double PrecompTime = 0.0;
 	double FbinditeraTime = 0.0;
-
-	Solve_Constraints13(50);
 	//差分法かLUかを選択する
-	//if (whichmethodused) {
-	//	for (auto _g : groups) {
-	//		mtCP_3.startMyTimer();
-	//		mtUpadateJacobi.startMyTimer();
-	//		//初期化してもしなくてもいい
-	//		_g->iterativeVector = Eigen::VectorXd::Zero(3 * _g->particles.size());
-	//		if (useSparse) {
-	//			_g->Calc_Jacobi_Matrix_iteration_Sparse();
-	//			_g->Calc_Constant_term_iteration_Sparse();
-	//		}
-	//		else {
-	//			_g->Calc_Jacobi_Matrix_iteration();
-	//			_g->Calc_Constant_term_iteration2();
-	//		}
-	//		mtUpadateJacobi.endMyTimer();
-	//		JacobiTime += mtUpadateJacobi.getDt();
-	//		//Jacobi行列の前処理
-	//		mtPrecomp.startMyTimer();
-	//		_g->Calc_GMRES_Pre();
-	//		mtPrecomp.endMyTimer();
-	//		PrecompTime += mtPrecomp.getDt();
-	//		mtCP_3.endMyTimer();
-	//	}
-
-	//	//std::cout << "Jacobi time is " << JacobiTime << std::endl;
-	//	//std::cout << "Precomp time is " << PrecompTime << std::endl;
-	//	//反復法
-	//	//std::cout << "OK" << std::endl;
-	//	mtFbinditera.startMyTimer();
-	//	Solve_Constraints12(PBD_LOOP);
-	//	mtFbinditera.endMyTimer();
-	//	FbinditeraTime = mtFbinditera.getDt();
-	//	//std::cout << "Fbinditera time is " << FbinditeraTime << std::endl;
-	//}
-	//else {
-	//	for (auto _g : groups) {
-	//		mtCP_3.startMyTimer();
-	//		//初期化してもしなくてもいい
-	//		//_g->iterativeVector = Eigen::VectorXd::Zero(3 * _g->particles.size());
-	//		_g->Calc_Jacobi_Matrix_iteration();
-	//		_g->Calc_Constant_term_iteration2();
-	//		mtCP_3.endMyTimer();
-	//	}
-	//	//反復法
-	//	Solve_Constraints10_LU(PBD_LOOP);
-	//}
+	if (whichmethodused) {
+		for (auto _g : groups) {
+			mtCP_3.startMyTimer();
+			mtUpadateJacobi.startMyTimer();
+			//初期化してもしなくてもいい
+			_g->iterativeVector = Eigen::VectorXd::Zero(3 * _g->particles.size());
+			if (useSparse) {
+				_g->Calc_Jacobi_Matrix_iteration_Sparse();
+				_g->Calc_Constant_term_iteration_Sparse();
+			}
+			else {
+				_g->Calc_Jacobi_Matrix_iteration();
+				_g->Calc_Constant_term_iteration2();
+			}
+			mtUpadateJacobi.endMyTimer();
+			JacobiTime += mtUpadateJacobi.getDt();
+			//Jacobi行列の前処理
+			mtPrecomp.startMyTimer();
+			_g->Calc_GMRES_Pre();
+			mtPrecomp.endMyTimer();
+			PrecompTime += mtPrecomp.getDt();
+			mtCP_3.endMyTimer();
+		}
+		//std::cout << "Jacobi time is " << JacobiTime << std::endl;
+		//std::cout << "Precomp time is " << PrecompTime << std::endl;
+		//反復法
+		//std::cout << "OK" << std::endl;
+		mtFbinditera.startMyTimer();
+		Solve_Constraints12(PBD_LOOP);
+		mtFbinditera.endMyTimer();
+		FbinditeraTime = mtFbinditera.getDt();
+		//std::cout << "Fbinditera time is " << FbinditeraTime << std::endl;
+	}
+	else {
+		for (auto _g : groups) {
+			mtCP_3.startMyTimer();
+			//初期化してもしなくてもいい
+			//_g->iterativeVector = Eigen::VectorXd::Zero(3 * _g->particles.size());
+			_g->Calc_Jacobi_Matrix_iteration();
+			_g->Calc_Constant_term_iteration2();
+			mtCP_3.endMyTimer();
+		}
+		//反復法
+		Solve_Constraints10_LU(PBD_LOOP);
+	}
 	mtCconstr.endMyTimer();
-	std::ostringstream sstr;
-	std::ostringstream sstr2;
-	std::ostringstream sstr3;
-	std::ostringstream sstr4;
-	std::ostringstream sstr5;
-	std::ostringstream sstr6;
-	//各計算にかかった時間を出力
-	sstr << std::fixed;
-	unsigned int string_color = GetColor(255, 255, 255);
-	sstr << "Rotate is " << std::setprecision(4) << mtUpRotate.getDt() << ",EXFis " << std::setprecision(4) << mtCEPos.getDt()
-		<< ",Jacobi is " << std::setprecision(4) << mtCP_3.getDt()
-		/*<< ",FEM is " << std::setprecision(4) << mtCP_2.getDt() */
-		<< ",Const" << std::setprecision(4) << mtCconstr.getDt() << std::endl;
-	//     回転の計算時間,弾性力以外の力による位置更新の計算時間(ms)
-	//	   Jacobi行列の更新にかかる時間
-	//	   一回目の有限要素法による位置更新の計算時間(グループの総和),制約条件による位置の修正にかかる時間
-	DrawString(0, 15, sstr.str().data(), string_color);
-	sstr.str("");
+	
 
 	//マウスの座標を出力(外力を働かせるようにもできる)
 	/*
@@ -529,12 +507,6 @@ void UseBlockObjectDouble::Update() {
 		sstr3 << "Force is (" << Outofforce[0] << "," << Outofforce[1] << "," << Outofforce[2] << ")" << "N" << std::endl;
 	}
 	*/
-	unsigned int string_color2 = GetColor(255, 255, 1);
-	DrawString(0, 49, sstr2.str().data(), string_color2);
-	unsigned int string_color3 = GetColor(255, 100, 100);
-	DrawString(0, 67, sstr3.str().data(), string_color3);
-	sstr2.str("");
-	sstr3.str("");
 }
 //==========================================================================//
 //	@end		   				ループ設定									//

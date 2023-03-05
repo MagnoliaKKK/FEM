@@ -44,24 +44,7 @@ void TetraElementD:: Create_Faces() {
 //==========================================================================//
 
 
-//==========================================================================//
-//	@start		   				ループ設定									//
-//==========================================================================//
-void TetraElementD::Draw()const {
-	Eigen::Vector3d line = particles[particles.size() - 1]->Get_Grid();
 
-	int color = WHITE;
-
-	MyDrawLine3(particles[0]->Get_Grid(), particles[2]->Get_Grid(), color);
-	MyDrawLine3(particles[0]->Get_Grid(), particles[1]->Get_Grid(), color);
-	MyDrawLine3(particles[1]->Get_Grid(), particles[2]->Get_Grid(), color);
-	MyDrawLine3(particles[0]->Get_Grid(), particles[3]->Get_Grid(), color);
-	MyDrawLine3(particles[2]->Get_Grid(), particles[3]->Get_Grid(), color);
-	MyDrawLine3(particles[1]->Get_Grid(), particles[3]->Get_Grid(), color);
-	for (auto it = particles.begin(), end = particles.end(); it != end; it++) {
-		(*it)->Draw();
-	}
-}
 //==========================================================================//
 //	@end		   				ループ設定									//
 //==========================================================================//

@@ -40,7 +40,6 @@ public:
 	Eigen::SparseMatrix<double> Rn_Matrix_Sparse;//Jacobi計算用(rotation_Matrix)
 	Eigen::SparseMatrix<double> Rn_MatrixTR_Sparse;//Jacobi計算用(rotation_Matrix.T)
 	Eigen::SparseMatrix<double> MassCondi_Sparse;//Jacobi計算用(I-(sumn/groupmass))
-	Eigen::SparseMatrix<double> Sum_M_Matrix_Sparse;
 
 	Eigen::MatrixXd Diag_M_Matrix;	  // グループの対角質量行列
 	Eigen::MatrixXd SUM_M_Matrix;	  // グループの帯状質量行列
@@ -176,8 +175,6 @@ public:
 	void Calc_iterative_LocalFEM();	//debug用,反復法のFEM部分の計算(差分,LUとGMRES)
 	void Calc_GMRES_Pre();//debug用(前処理)
 	void Calc_GMRES_FEM();//debug用(前処理済)
-	//void Calc_GMRES_FEM();//debug用(前処理済)
-	Eigen::VectorXd Calc_Deltax();//Updated method
 
 	void Calc_Jacobi_Matrix_iteration();//反復法、ヤコビで使う行列の更新(1ステップで一回)
 	void Calc_Jacobi_Matrix_iteration_Sparse();//反復法、ヤコビで使う行列の更新(1ステップで一回)(Sparse)
@@ -188,7 +185,6 @@ public:
 	void Calc_Jacobi_Matrix_iteration_Old();//OldFEMの係数行列作成
 	void Calc_Constant_term_iteration_Old ();//OldFEMの定数値作成
 
-	void Draw()const;
 
 	double Get_Volume()const;
 	void Set_Mass(double whole_mass);
@@ -255,8 +251,6 @@ public:
 	Eigen::VectorXd Deltax_CoFEM;//グループにおける解ベクトル（ひずみの部分）（グループによって異なる値をもつ）
 	Eigen::VectorXd Deltax_Bind;//グループにおける解ベクトル（拘束力の部分）（グループによって異なる値をもつ）
 	Eigen::VectorXd bind_force_iterative;//各節点における拘束力ベクトル（変化する）（ループ0時点ではいつも0）
-	Eigen::VectorXd Deltay;
-	Eigen::VectorXd Deltax;
 
 	//Debug用
 	void Update_Rotate2();
@@ -283,7 +277,6 @@ private:
 
 	Eigen::GMRES< Eigen::SparseMatrix<double>> gmresFEM_Pre;
 	Eigen::GMRES< Eigen::SparseMatrix<double>, Eigen::IncompleteLUT<double> > gmresFEM_Pre2;
-	Eigen::GMRES< Eigen::SparseMatrix<double>, Eigen::IncompleteLUT<double> > gmresFEM;
 };
 
 #endif

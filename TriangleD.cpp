@@ -15,15 +15,7 @@ TriangleD::~TriangleD() {}
 //==========================================================================//
 //	@start		   				ループ設定									//
 //==========================================================================//
-void TriangleD::Draw(int color)const {
-	VECTOR p[3];
-	for (unsigned int i = 0; i < 3; ++i) {
-		Eigen::Vector3d grid = particles[i]->Get_Grid();
-		p[i] = VGet(float(grid.x()), 480 - float(grid.y()), float(grid.z()));
-	}
-	Eigen::Vector3d normal = this->area_vec.normalized();
-	DrawTriangle3D(p[0], p[1], p[2], color, true);
-}
+
 //==========================================================================//
 //	@end		   				ループ設定									//
 //==========================================================================//

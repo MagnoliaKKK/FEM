@@ -16,7 +16,6 @@ public:
 	TetraElementD(std::vector<ParticleD*> particles);
 	~TetraElementD();
 
-	void Draw()const;
 	bool has_Common_Points(TetraElementD t)const;
 
 	std::vector<ParticleD*> Get_Particle()const;

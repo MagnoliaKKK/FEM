@@ -25,9 +25,7 @@ ParticleD::~ParticleD() {}
 //==========================================================================//
 //	@start		   				ループ設定									//
 //==========================================================================//
-void ParticleD::Draw()const {
-	DrawCircle(int(grid.x()), int(grid.y()), 3, RED, true);
-}
+
 void ParticleD::Update(const Eigen::Vector3d &next_grid) {
 	acceleration = (((next_grid - this->grid) / TIME_STEP)- velocity) / TIME_STEP;
 	velocity = (next_grid - this->grid) / TIME_STEP;

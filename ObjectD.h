@@ -5,6 +5,7 @@
 #ifndef _OBJECTD
 #define _OBJECTD
 
+#include "Debug.h"
 #include "TetraGroupD.h"
 
 class ObjectD {
@@ -15,7 +16,6 @@ public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 	virtual void Update() = 0;	//位置更新
-	virtual void Draw()const;	//描画
 
 	void Timestep_Init();	//各タイムステップで外力を0にする
 	double Get_V();			//オブジェクトの体積を取得
@@ -73,7 +73,6 @@ protected:
 	void Solve_Constraints10_LU(unsigned int loop);  //debug用
 	void Solve_Constraints11(unsigned int loop);  //debug用(予測位置がグループごとに異なる)
 	void Solve_Constraints12(unsigned int loop);  //debug用(予測位置がグループごとに異なる)
-	void Solve_Constraints13(unsigned int loop); //new method
 	void Volume_consevation(unsigned int loop);
 
 	Eigen::Vector3d Calc_New_Exp_Pos(ParticleD* p);//位置修正(差を考える)
